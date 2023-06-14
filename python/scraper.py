@@ -3,21 +3,33 @@ from bs4 import BeautifulSoup
 
 
 def req(URL):
-    pass
+    results=requests.get(URL)
+    page=BeautifulSoup(results.content,"html.parser")
+    allParagraph=BeautifulSoup(str(page.find_all("div",class_="mw-parser-output")),"html.parser")
+    test=allParagraph.find_all("p")
+    li=[]
+    for i in test:
+        link=i.find("span")
+        if link is not None:
+            li.append(i)
+    return li
+    
 
 def get_citations_needed_count(URL):
-    pass
+    allP=req(URL)
+    return len(allP)
 
 
 def  get_citations_needed_report(URL):
-    pass
+    allP=req(URL)
+    st=""
+    for i in allP:
+        txt=i.text
+        st+=(str(txt).strip()+"\n\n")
+    return st.strip()
 
 
-URL="https://en.wikipedia.org/wiki/History_of_Mexico"
-results=requests.get(URL)
-page=BeautifulSoup(results.content,"html.parser")
-allPosts=page.find_all("div",class_="hatnote navigation-not-searchable")
-header="https://en.wikipedia.org/"
-for i in allPosts:
-    link=i.find("a").get("href")
-    print(header+link)
+if __name__=="__main__":
+    URL="https://en.wikipedia.org/wiki/History_of_Mexico"
+    print(get_citations_needed_count(URL))
+    print(get_citations_needed_report(URL))
